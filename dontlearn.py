@@ -8,8 +8,8 @@ def display(Q, args):
     max_length = 3
     while True:
         Q.init_state(state)
-        action = Q.max_action(state)
-        # action = board.max_action(Q, state)
+        # action = Q.max_action(state)
+        action = board.max_action(Q, state)
         if args.visual == "on":
             board.print_vis()
             print(SNAME_ACTION[action])

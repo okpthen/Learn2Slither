@@ -1,27 +1,24 @@
 from Board import Board, SNAME_ACTION
 import random
 from Q_table import Q_table
+from config import Learning_Rate, Discount_Factor, Exploration_Rate, Exploration_Rate_min,  Exploration_Rate_decrace 
 
-Learning_Rate = 0.1
-Discount_Factor = 0.95
-Exploration_Rate = 1.0
-Exploration_Rate_min = 0.1
-Exploration_Rate_decrace = 0.001
 
-def section(Q : Q_table, args):
+def section(Q : Q_table, args, Exploration):
     board = Board(args.size)
     state = board.__hash__()
     duration = 0
     max_length = 3
-    Exploration = Exploration_Rate
+    score = 0
+    # Exploration = Exploration_Rate
     while True:
         Q.init_state(state)
         epsilon_greedy = random.randint(1, 1000) / 1000
         if epsilon_greedy <= Exploration:
             # action = Q.max_action(state)
-            action = board.max_action(Q, state)
-        else:
             action = random.randint(0, 3)
+        else:
+            action = board.max_action(Q, state)
         score_prev = Q[state][action]
         if args.visual == "on":
             board.print_vis()
@@ -50,10 +47,13 @@ def section(Q : Q_table, args):
 def train(args):
     Q = Q_table(args.load)
     max = 0
+    Exploration = Exploration_Rate
     for i in range (args.sessions):
-        length = section(Q, args)
+        length = section(Q, args, Exploration)
         if max < length:
             max = length
+        if Exploration > Exploration_Rate_min:
+            Exploration -= Exploration_Rate_decrace
     print(f"max length :{max}")
     print(f"Q = {len(Q)}")
     # print(args)

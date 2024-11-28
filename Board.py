@@ -4,22 +4,23 @@ import sys
 import hashlib
 import copy
 from Q_table import Q_table
+from config import SCORE_END, SCOER_MOVE, SCORE_GREEN, SCORE_RED, SCORE_CLEAR, SNAME_ACTION
 
 
-SNAME_ACTION = {
-    0: "UP",
-    1: "DOWN",
-    2: "RIGHT",
-    3: "LEFT"
-}
+# SNAME_ACTION = {
+#     0: "UP",
+#     1: "DOWN",
+#     2: "RIGHT",
+#     3: "LEFT"
+# }
 
 END_GAME = True
 CONTINUE_GAME = False
-SCORE_END = -100
-SCOER_MOVE = -0.1
-SCORE_GREEN = 5
-SCORE_RED = -5
-SCORE_CLEAR = 1000
+# SCORE_END = -100
+# SCOER_MOVE = -0.1
+# SCORE_GREEN = 5
+# SCORE_RED = -5
+# SCORE_CLEAR = 1000
 
 class Board:
     """Board class"""
@@ -275,6 +276,8 @@ class Board:
                     action = i
                 if score == SCOER_MOVE:
                     move_list.append(i)
+                if score == SCORE_END:
+                    Q[state][i] == SCORE_END
             elif i == 1:
                 _, score = tmp.down()
                 if score > top:
@@ -282,6 +285,8 @@ class Board:
                     action = i
                 if score == SCOER_MOVE:
                     move_list.append(i)
+                if score == SCORE_END:
+                    Q[state][i] == SCORE_END
             elif i == 2:
                 _, score = tmp.right()
                 if score > top:
@@ -289,6 +294,8 @@ class Board:
                     action = i
                 if score == SCOER_MOVE:
                     move_list.append(i)
+                if score == SCORE_END:
+                    Q[state][i] == SCORE_END
             elif i == 3:
                 _, score = tmp.left()
                 if score > top:
@@ -296,6 +303,8 @@ class Board:
                     action = i
                 if score == SCOER_MOVE:
                     move_list.append(i)
+                if score == SCORE_END:
+                    Q[state][i] == SCORE_END
         if top != SCOER_MOVE:
             return action
 
@@ -315,3 +324,4 @@ class Board:
             if action in move_list:
                 return action
         return action
+    
