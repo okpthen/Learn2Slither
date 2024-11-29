@@ -1,8 +1,9 @@
 from Coordinates import Coordinates
 import random
 import sys
-from Config import SCORE_END, SCOER_MOVE, SCORE_GREEN, SCORE_RED, SCORE_CLEAR, SNAME_ACTION
+from Config import SCORE_END, SCOER_MOVE, SCORE_GREEN, SCORE_RED, SCORE_CLEAR, SNAME_ACTION, NUM_INPUT
 # import numpy as np
+import copy
 
 # SNAME_ACTION = {
 #     0: "UP",
@@ -254,43 +255,43 @@ class Board:
     def snake_size(self):
         return 1 + len(self.snake_body)
     
-    def state(self):
-        N_L = [False, False, False, False, True]
-        B_L = [False, False, False, True, False]
-        R_L = [False, False, True, False, False]
-        G_L = [False, True, False, False, False]
-        H_L = [True, False, False, False, False]
-        # N_L = [False, False, False]
-        # B_L = [False, False, True]
-        # R_L = [False, True, False]
-        # G_L = [False, True, True]
-        # H_L = [True, False, False]
-        array = []
-        # array = np.zeros(60, dtype=bool)
-        self.make_visibility()
-        for i in range(1, 11):
-            if self.visibility_horizontal[i] == "0":
-                array += N_L
-            elif self.visibility_horizontal[i] == "H":
-                array += H_L
-            elif self.visibility_horizontal[i] == "G":
-                array += G_L
-            elif self.visibility_horizontal[i] == "R":
-                array += R_L
-            elif self.visibility_horizontal[i] == "B":
-                array += B_L
-        for i in range(1, 11):
-            if self.visibility_vertical[i] == "0":
-                array += N_L
-            elif self.visibility_vertical[i] == "H":
-                array += H_L
-            elif self.visibility_vertical[i] == "G":
-                array += G_L
-            elif self.visibility_vertical[i] == "R":
-                array += R_L
-            elif self.visibility_vertical[i] == "B":
-                array += B_L
-        return array
+    # def state(self):
+    #     # N_L = [False, False, False, False, True]
+    #     # B_L = [False, False, False, True, False]
+    #     # R_L = [False, False, True, False, False]
+    #     # G_L = [False, True, False, False, False]
+    #     # H_L = [True, False, False, False, False]
+    #     N_L = [False, False, False]
+    #     B_L = [False, False, True]
+    #     R_L = [False, True, False]
+    #     G_L = [False, True, True]
+    #     H_L = [True, False, False]
+    #     array = []
+    #     # array = np.zeros(60, dtype=bool)
+    #     self.make_visibility()
+    #     for i in range(1, 11):
+    #         if self.visibility_horizontal[i] == "0":
+    #             array += N_L
+    #         elif self.visibility_horizontal[i] == "H":
+    #             array += H_L
+    #         elif self.visibility_horizontal[i] == "G":
+    #             array += G_L
+    #         elif self.visibility_horizontal[i] == "R":
+    #             array += R_L
+    #         elif self.visibility_horizontal[i] == "B":
+    #             array += B_L
+    #     for i in range(1, 11):
+    #         if self.visibility_vertical[i] == "0":
+    #             array += N_L
+    #         elif self.visibility_vertical[i] == "H":
+    #             array += H_L
+    #         elif self.visibility_vertical[i] == "G":
+    #             array += G_L
+    #         elif self.visibility_vertical[i] == "R":
+    #             array += R_L
+    #         elif self.visibility_vertical[i] == "B":
+    #             array += B_L
+    #     return array
     
     def reset(self):
         self.snake_body.clear()
@@ -310,3 +311,101 @@ class Board:
             return self.right()
         elif SNAME_ACTION[action] == "LEFT":
             return self.left()
+        
+    def state(self):
+        # size = 17
+        # state = [self.size + 1] * size
+        # state[4 * 0 + 0] = self.snake_head.y + 1
+        # state[4 * 0 + 1] = self.size - self.snake_head.y
+        # state[4 * 0 + 2] = self.size - self.snake_head.x
+        # state[4 * 0 + 3] = self.snake_head.y + 1
+        # for apple in self.green_apple:
+        #     if self.snake_head.x == apple.x:
+        #         if apple.y - self.snake_head.y:
+        #             if state[4 * 1 + 0] > apple.y - self.snake_head.y:
+        #                 state[4 * 1 + 0] = apple.y - self.snake_head.y
+        #             elif state[4 * 1 + 1] > self.snake_head.y - apple.y:
+        #                 state[4 * 1 + 1] = self.snake_head.y - apple.y
+        #     if self.snake_head.y == apple.y:
+        #         if apple.x - self.snake_head.x:
+        #             if state[4 * 1 + 2] > apple.x - self.snake_head.x:
+        #                 state[4 * 1 + 2] = apple.x - self.snake_head.x
+        #             elif state[4 * 1 + 3] > self.snake_head.x - apple.x:
+        #                 state[4 * 1 + 3] = self.snake_head.x - apple.x
+        # if self.snake_head.x == self.red_apple.x:
+        #     if self.red_apple.y - self.snake_head.y:
+        #         state[4 * 2 + 0] = self.red_apple.y - self.snake_head.y
+        #     else:
+        #         state[4 * 2 + 1] = self.snake_head.y - self.red_apple.y
+        # if self.snake_head.y == self.red_apple.y:
+        #     if self.red_apple.x - self.snake_head.x:
+        #         state[4 * 2 + 2] = self.red_apple.x - self.snake_head.x
+        #     else:
+        #         state[4 * 2 + 3] = self.snake_head.x - self.red_apple.x
+        # for body in self.snake_body:
+        #     if self.snake_head.x == body.x:
+        #         if body.y - self.snake_head.y:
+        #             if state[4 * 3 + 0] > body.y - self.snake_head.y:
+        #                 state[4 * 3+ 0] = body.y - self.snake_head.y
+        #             elif state[4 * 3 + 1] > self.snake_head.y - body.y:
+        #                 state[4 * 3 + 1] = self.snake_head.y - body.y
+        #     if self.snake_body.y == body.y:
+        #         if body.x - self.snake_head.x:
+        #             if state[4 * 3 + 2] > body.x - self.snake_head.x:
+        #                 state[4 * 3 + 2] = body.x - self.snake_head.x
+        #             elif state[4 * 3 + 3] > self.snake_head.x - body.x:
+        #                 state[4 * 3 + 3] = self.snake_head.x - body.x
+        # state[16] = self.snake_size()
+        size = NUM_INPUT
+        state = [self.size + 1] * size
+        state[4 * 0 + 0] = self.snake_head.y + 1
+        state[4 * 0 + 1] = self.size - self.snake_head.y
+        state[4 * 0 + 2] = self.size - self.snake_head.x
+        state[4 * 0 + 3] = self.snake_head.x + 1
+
+        for apple in self.green_apple:
+            if self.snake_head.x == apple.x:
+                distance_y = apple.y - self.snake_head.y
+                if distance_y > 0:
+                    state[4 * 1 + 0] = min(state[4 * 1 + 0], distance_y)
+                elif distance_y < 0:
+                    state[4 * 1 + 1] = min(state[4 * 1 + 1], -distance_y)
+
+            if self.snake_head.y == apple.y:
+                distance_x = apple.x - self.snake_head.x
+                if distance_x > 0:
+                    state[4 * 1 + 2] = min(state[4 * 1 + 2], distance_x)
+                elif distance_x < 0:
+                    state[4 * 1 + 3] = min(state[4 * 1 + 3], -distance_x)
+
+        if self.snake_head.x == self.red_apple.x:
+            distance_y = self.red_apple.y - self.snake_head.y
+            if distance_y > 0:
+                state[4 * 2 + 0] = distance_y
+            elif distance_y < 0:
+                state[4 * 2 + 1] = -distance_y
+
+        if self.snake_head.y == self.red_apple.y:
+            distance_x = self.red_apple.x - self.snake_head.x
+            if distance_x > 0:
+                state[4 * 2 + 2] = distance_x
+            elif distance_x < 0:
+                state[4 * 2 + 3] = -distance_x
+
+        for body in self.snake_body:
+            if self.snake_head.x == body.x:
+                distance_y = body.y - self.snake_head.y
+                if distance_y > 0:
+                    state[4 * 3 + 0] = min(state[4 * 3 + 0], distance_y)
+                elif distance_y < 0:
+                    state[4 * 3 + 1] = min(state[4 * 3 + 1], -distance_y)
+
+            if self.snake_head.y == body.y:
+                distance_x = body.x - self.snake_head.x
+                if distance_x > 0:
+                    state[4 * 3 + 2] = min(state[4 * 3 + 2], distance_x)
+                elif distance_x < 0:
+                    state[4 * 3 + 3] = min(state[4 * 3 + 3], -distance_x)
+        state[16] = len(self.snake_body) + 1
+
+        return state

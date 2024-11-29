@@ -46,7 +46,7 @@ def display_board(args):
                 if event.key == pygame.K_t:
                     print(f"T key pressed! Snake size: {board.snake_size()}")
                     aaa = board.state()
-                    print(len(aaa))
+                    print(aaa)
                 if event.key == pygame.K_e:
                     print(f"E key pressed!")
                     board.print_vis()

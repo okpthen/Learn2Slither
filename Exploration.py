@@ -9,14 +9,14 @@ class Agent:
         self.rate = EXPLORATION_RATE_DECRACE
         self.step = 0
     
-    def get_epsilon(self):
-        return max((self.start - self.rate * self.step), self.end)
+    def get_epsilon(self, i):
+        return max((self.start - self.rate * i), self.end)
 
-    def select_action(self, output):
-        epsilon = self.get_epsilon()
+    def select_action(self, output, i, board):
+        epsilon = self.get_epsilon(i)
         self.step += 1
         if np.random.rand() <= epsilon:
             return random.randint(0, 3)
         else:
-            print(output)
+            # return board.max_action()
             return output.argmax().item()
