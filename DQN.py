@@ -17,7 +17,9 @@ class DQN(nn.Module):
         # self.fc5 = nn.Linear(128, NUM_OUTPUT)
         self.q_net = nn.Sequential(
             nn.Linear(NUM_INPUT, 128),
+            # nn.ReLU(),
             nn.Linear(128, 256),
+            # nn.ReLU(),
             nn.Linear(256, 256),
             nn.Linear(256, 128),
             nn.Linear(128, NUM_OUTPUT)

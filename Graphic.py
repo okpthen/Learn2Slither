@@ -1,7 +1,10 @@
 import pygame
 import sys
 from Board import Board, SNAME_ACTION
-
+from DQN import DQN
+import torch
+from Config import NUM_INPUT, NUM_OUTPUT
+import torch.nn as nn
 
 def drwa_board(screen, board: Board):
 
@@ -29,6 +32,10 @@ def display_board(args):
     clock = pygame.time.Clock()
     board = Board(args.size)
     print(board)
+    target_net = DQN()
+    target_net.load_state_dict(torch.load("models/q_net.pth"))
+
+
 
     while True:
         for event in pygame.event.get():
@@ -46,7 +53,8 @@ def display_board(args):
                 if event.key == pygame.K_t:
                     print(f"T key pressed! Snake size: {board.snake_size()}")
                     aaa = board.state()
-                    print(aaa)
+                    ans = target_net(aaa)
+                    print(f"ans = {ans} {SNAME_ACTION[ans.argmax().item()]}")
                 if event.key == pygame.K_e:
                     print(f"E key pressed!")
                     board.print_vis()

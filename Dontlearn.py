@@ -18,5 +18,4 @@ def display(Q, args):
 
 
 def dontlearn(args):
-    max_length = 0
-    max_duration = 0
+    print("aa")

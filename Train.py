@@ -6,7 +6,6 @@ from ReplayBuffer import ReplayBuffer
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import os
 
 
 def tuple_to_tensor(q_values, actions, rewards, new_state, end, states):
@@ -34,29 +33,17 @@ def update_policy(policy_net, target_net, replay : ReplayBuffer, optimizer):
         tuple_to_tensor(q_values, actions, rewards, new_state, end, states)
     current_q_values = q_values.gather(1, actions)
     next_max_q_values = target_net(new_state).max(1)[0].detach()
-    # print(rewards)
-    # print(next_max_q_values * ~end * DISCOUNT_FACTOR)
     target_q_values = rewards + (DISCOUNT_FACTOR * next_max_q_values * ~end)
-    # print(target_q_values)
-    # print(rewards)
-    # target_q_values = rewards + (DISCOUNT_FACTOR * next_max_q_values)
 
     # current_q_values = torch.tensor(current_q_values, dtype=torch.float32, requires_grad=True)
     # target_q_values = torch.tensor(target_q_values, dtype=torch.float32, requires_grad=True) 
-
-    # print(target_q_values)
-    # print(current_q_values)
-    # loss = (current_q_values - target_q_values).pow(2).mean()
-    # print(f"{loss}")
 
     current_q_values = current_q_values.clone().detach().requires_grad_(True)
     target_q_values = target_q_values.clone().detach().requires_grad_(True)
     target_q_values = target_q_values.unsqueeze(1)
 
-    # print(target_q_values)
-    # print(current_q_values)
-
-    loss_fn = nn.MSELoss()
+    # loss_fn = nn.MSELoss()
+    loss_fn = nn.HuberLoss(delta=1.0)
     loss = loss_fn(current_q_values, target_q_values)
     
     optimizer.zero_grad()
@@ -71,7 +58,7 @@ def train(args):
     # target_net = copy.deepcopy(policy_net)
     target_net = DQN()
     replay = ReplayBuffer()
-    agent = Agent()
+    agent = Agent(args.sessions)
     max_length = 0
     optimizer = optim.Adam(policy_net.parameters(), lr=LEARNING_RATE)
     for i in range(args.sessions):
@@ -79,11 +66,11 @@ def train(args):
         duration = 1
         if i % TARGET_UPDATE_INTERVAL == 0:
             target_net.load_state_dict(policy_net.state_dict())
-            print(f"update target_net {i}")
+            # print(f"update target_net {i}")
         while True:
             state = board.state()
             q_values = policy_net(state)
-            action = agent.select_action(q_values, i, board)
+            action = agent.select_action(q_values, board, i)
             end, reword = board.action(action)
             new_state = board.state()
             replay.add((q_values, state, action, reword, new_state, end))
@@ -92,16 +79,19 @@ def train(args):
             
             if end:
                 loss = update_policy(policy_net, target_net, replay, optimizer)
-                if i % 50000 == 0:
-                    torch.save(target_net.q_net.state_dict(), f"models/{i}time.pth")
+                if i % 100000 == 0:
+                    # torch.save(policy_net.q_net.state_dict(), f"models/{i}time.pth")
+                    # print(f"savint model: models/{i}time.pth")
+                    print(f"Max Size {max_length}")
                 size = board.snake_size()
                 if size > max_length:
                     max_length = size
                 # print(f"{i+1}/{args.sessions}\tGame over, max length = {size}, max duration = {duration}")
-                if i % 1000 == 999:
-                    print(f"{i+1}/{args.sessions}\tGame over, max length = {size}, loss = {loss}")
-                    print(f"Max Size {max_length}")
+                if i % 1000 == 0:
+                    print(f"{i}/{args.sessions}\tGame over, max length = {size}, loss = {loss}")
                 break
             duration += 1
-    torch.save(target_net.q_net.state_dict(), "models/q_net.pth")
+    # torch.save(target_net.q_net.state_dict(), "models/q_net.pth")
+    torch.save(target_net.state_dict(), "models/q_net.pth")
+
     print(f"Result Max Size {max_length}")

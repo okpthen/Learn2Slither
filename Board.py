@@ -357,7 +357,7 @@ class Board:
         #                 state[4 * 3 + 3] = self.snake_head.x - body.x
         # state[16] = self.snake_size()
         size = NUM_INPUT
-        state = [self.size + 1] * size
+        state = [-10] * size
         state[4 * 0 + 0] = self.snake_head.y + 1
         state[4 * 0 + 1] = self.size - self.snake_head.y
         state[4 * 0 + 2] = self.size - self.snake_head.x
@@ -409,3 +409,46 @@ class Board:
         state[16] = len(self.snake_body) + 1
 
         return state
+
+    def max_action(self):
+            top = -1001
+            action = -1
+            for i in range(4):
+                tmp = copy.deepcopy(self)
+                if i == 0:
+                    _, score = tmp.up()
+                    if score > top:
+                        top = score
+                        action = i
+                elif i == 1:
+                    _, score = tmp.down()
+                    if score > top:
+                        top = score
+                        action = i
+                elif i == 2:
+                    _, score = tmp.right()
+                    if score > top:
+                        top = score
+                        action = i
+                elif i == 3:
+                    _, score = tmp.left()
+                    if score > top:
+                        top = score
+                        action = i
+            return action
+
+        # for apple in self.green_apple:
+        #     if apple.x == self.snake_head.x:
+        #         if apple.y > self.snake_head.y and 1 in move_list:
+        #             return 1
+        #         elif apple.y < self.snake_head.y and 0 in move_list:
+        #             return 0
+        #     if apple.y == self.snake_head.y:
+        #         if apple.x > self.snake_head.x and 2 in move_list:
+        #             return 2
+        #         elif apple.x < self.snake_head.x and 3 in move_list:
+        #             return 3
+        # for i in range(100):
+        #     if action in move_list:
+        #         return action
+        # return action
