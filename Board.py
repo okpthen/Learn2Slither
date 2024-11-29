@@ -56,12 +56,12 @@ class Board:
         # return hash((self.snake_head.x, self.snake_head.y, tuple(
         #     tuple(sorted(segment.items())) for segment in self.visibility
         # )))
-        data = f"{self.snake_head.x},{self.snake_head.y}," + "|".join(
-            ",".join(f"{k}:{v}" for k, v in sorted(segment.items()))
-            for segment in self.visibility
-        )
-        hash_object = hashlib.sha256(data.encode())
-        return int(hash_object.hexdigest(), 16)
+        # data = f"{self.snake_head.x},{self.snake_head.y}," + "|".join(
+        #     ",".join(f"{k}:{v}" for k, v in sorted(segment.items()))
+        #     for segment in self.visibility
+        # )
+        # hash_object = hashlib.sha256(data.encode())
+        return self.state()
 
 
     def random(self):
@@ -324,4 +324,40 @@ class Board:
             if action in move_list:
                 return action
         return action
-    
+
+    def state(self):
+        N_L = 0
+        B_L = 1
+        R_L = 2
+        G_L = 3
+        state = 0
+        self.make_visibility()
+        for i in range(self.snake_head.x - 2, self.snake_head.x + 3):
+            if i >= self.size or i < 0:
+                state += B_L
+            elif self.visibility_horizontal[i] == "0":
+                state += N_L
+            elif self.visibility_horizontal[i] == "H":
+                continue
+            elif self.visibility_horizontal[i] == "G":
+                state += G_L
+            elif self.visibility_horizontal[i] == "R":
+                state += R_L
+            elif self.visibility_horizontal[i] == "B":
+                state += B_L
+            state *= 4
+        for i in range(self.snake_head.y - 2, self.snake_head + 3):
+            if i >= self.size or i < 0:
+                state += B_L
+            elif self.visibility_vertical[i] == "0":
+                state += N_L
+            elif self.visibility_vertical[i] == "H":
+                continue
+            elif self.visibility_vertical[i] == "G":
+                state += G_L
+            elif self.visibility_vertical[i] == "R":
+                state += R_L
+            elif self.visibility_vertical[i] == "B":
+                state += B_L
+            state += 4
+        return state

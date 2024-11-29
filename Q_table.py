@@ -34,10 +34,8 @@ class Q_table(dict):
                     self[state][i] = 0.0
 
     def max_action(self, state):
-        # print("max action")
         if state not in self:
             return random.randint(0, 3)
-        # print("max action and exit")
         actions = self[state]
         max_value = max(actions.values())
         max_actions = [action for action, value in actions.items() if value == max_value]

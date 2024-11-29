@@ -18,7 +18,8 @@ def section(Q : Q_table, args, Exploration):
             # action = Q.max_action(state)
             action = random.randint(0, 3)
         else:
-            action = board.max_action(Q, state)
+            action = Q.max_action(state)
+            # action = board.max_action(Q, state)
         score_prev = Q[state][action]
         if args.visual == "on":
             board.print_vis()
