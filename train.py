@@ -15,11 +15,9 @@ def section(Q : Q_table, args, Exploration):
         Q.init_state(state)
         epsilon_greedy = random.randint(1, 1000) / 1000
         if epsilon_greedy <= Exploration:
-            # action = Q.max_action(state)
             action = random.randint(0, 3)
         else:
             action = Q.max_action(state)
-            # action = board.max_action(Q, state)
         score_prev = Q[state][action]
         if args.visual == "on":
             board.print_vis()

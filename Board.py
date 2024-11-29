@@ -30,7 +30,9 @@ class Board:
         self.green_apple = [Coordinates(), Coordinates()]
         self.snake_head = Coordinates()
         self.snake_body = []
-        self.visibility = []
+        # self.visibility = []
+        self.visibility_horizontal = ""
+        self.visibility_vertical = ""
         self.size = size
         self.make_snake()
         while True:
@@ -52,7 +54,7 @@ class Board:
         return res
 
     def __hash__(self):
-        self.update_vis()
+        # self.update_vis()
         # return hash((self.snake_head.x, self.snake_head.y, tuple(
         #     tuple(sorted(segment.items())) for segment in self.visibility
         # )))
@@ -225,105 +227,154 @@ class Board:
                 break
         return CONTINUE_GAME, SCORE_GREEN
 
+    # def make_visibility(self):
+    #     if self.snake_head.x == self.red_apple.x or\
+    #             self.snake_head.y == self.red_apple.y:
+    #         self.visibility.append({'R': self.red_apple})
+    #     for apple in self.green_apple:
+    #         if apple.x == self.snake_head.x or apple.y == self.snake_head.y:
+    #             self.visibility.append({'G': apple})
+    #     for body in self.snake_body:
+    #         if body.x == self.snake_head.x or body.y == self.snake_head.y:
+    #             self.visibility.append({'B': body})
+    #     self.visibility.sort(key=lambda segment: sorted(segment.items()))
+
+    # def add_char(self, x, y):
+    #     if self.snake_head.eq(x, y):
+    #         return "H"
+    #     for tmp in self.visibility:
+    #         for kye, value in tmp.items():
+    #             if value.eq(x, y):
+    #                 return kye
+    #     if x == self.snake_head.x or y == self.snake_head.y:
+    #         return "0"
+    #     return " "
+
+    # def print_vis(self):
+    #     str = ""
+    #     for y in range(10):
+    #         for x in range(10):
+    #             str += self.add_char(x, y)
+    #         str += "\n"
+    #     print(str)
+
+    # def update_vis(self):
+    #     self.visibility.clear()
+    #     self.make_visibility()
+
     def make_visibility(self):
-        if self.snake_head.x == self.red_apple.x or\
-                self.snake_head.y == self.red_apple.y:
-            self.visibility.append({'R': self.red_apple})
-        for apple in self.green_apple:
-            if apple.x == self.snake_head.x or apple.y == self.snake_head.y:
-                self.visibility.append({'G': apple})
-        for body in self.snake_body:
-            if body.x == self.snake_head.x or body.y == self.snake_head.y:
-                self.visibility.append({'B': body})
-        self.visibility.sort(key=lambda segment: sorted(segment.items()))
+        vertical = "W"
+        horizontal = "W"
+        for i in range (10):
+            if self.snake_head.x == self.red_apple.x and self.red_apple.y == i:
+                vertical += "R"
+            if self.snake_head.y == self.red_apple.y and self.red_apple.x == i:
+                horizontal += "R"
+            if self.snake_head.y == i:
+                vertical += "H"
+            if self.snake_head.x == i:
+                horizontal += "H"
+            for apple in self.green_apple:
+                if apple.x == self.snake_head.x and apple.y == i:
+                    vertical += "G"
+                if apple.y == self.snake_head.y and apple.x == i:
+                    horizontal += "G"
+            for body in self.snake_body:
+                if body.x == self.snake_head.x and body.y == i:
+                    vertical += "B"
+                if body.y == self.snake_head.y and body.x == i:
+                    horizontal += "B"
+            if len(vertical) == i + 1:
+                vertical += "0"
+            if len(horizontal) == i + 1:
+                horizontal += "0"
+        horizontal += "W"
+        vertical += "W"
+        self.visibility_vertical = vertical
+        self.visibility_horizontal = horizontal
 
     def add_char(self, x, y):
-        if self.snake_head.eq(x, y):
-            return "H"
-        for tmp in self.visibility:
-            for kye, value in tmp.items():
-                if value.eq(x, y):
-                    return kye
-        if x == self.snake_head.x or y == self.snake_head.y:
-            return "0"
-        return " "
+        if x - 1 == self.snake_head.x:
+            return self.visibility_vertical[y]
+        if y - 1 == self.snake_head.y:
+            return self.visibility_horizontal[x]
+        if x == 0 or x == 11 or y == 0 or y == 11:
+            return " "
+        return "."
 
     def print_vis(self):
         str = ""
-        for y in range(10):
-            for x in range(10):
+        self.make_visibility()
+        for y in range(12):
+            for x  in range(12):
                 str += self.add_char(x, y)
             str += "\n"
         print(str)
-
-    def update_vis(self):
-        self.visibility.clear()
-        self.make_visibility()
     
     def snake_size(self):
         return 1 + len(self.snake_body)
     
-    def max_action(self, Q : Q_table, state):
-        top = -1001
-        action = -1
-        move_list = []
-        for i in range(4):
-            tmp = copy.deepcopy(self)
-            if i == 0:
-                _, score = tmp.up()
-                if score > top:
-                    top = score
-                    action = i
-                if score == SCOER_MOVE:
-                    move_list.append(i)
-                if score == SCORE_END:
-                    Q[state][i] == SCORE_END
-            elif i == 1:
-                _, score = tmp.down()
-                if score > top:
-                    top = score
-                    action = i
-                if score == SCOER_MOVE:
-                    move_list.append(i)
-                if score == SCORE_END:
-                    Q[state][i] == SCORE_END
-            elif i == 2:
-                _, score = tmp.right()
-                if score > top:
-                    top = score
-                    action = i
-                if score == SCOER_MOVE:
-                    move_list.append(i)
-                if score == SCORE_END:
-                    Q[state][i] == SCORE_END
-            elif i == 3:
-                _, score = tmp.left()
-                if score > top:
-                    top = score
-                    action = i
-                if score == SCOER_MOVE:
-                    move_list.append(i)
-                if score == SCORE_END:
-                    Q[state][i] == SCORE_END
-        if top != SCOER_MOVE:
-            return action
+    # def max_action(self, Q : Q_table, state):
+    #     top = -1001
+    #     action = -1
+    #     move_list = []
+    #     for i in range(4):
+    #         tmp = copy.deepcopy(self)
+    #         if i == 0:
+    #             _, score = tmp.up()
+    #             if score > top:
+    #                 top = score
+    #                 action = i
+    #             if score == SCOER_MOVE:
+    #                 move_list.append(i)
+    #             if score == SCORE_END:
+    #                 Q[state][i] == SCORE_END
+    #         elif i == 1:
+    #             _, score = tmp.down()
+    #             if score > top:
+    #                 top = score
+    #                 action = i
+    #             if score == SCOER_MOVE:
+    #                 move_list.append(i)
+    #             if score == SCORE_END:
+    #                 Q[state][i] == SCORE_END
+    #         elif i == 2:
+    #             _, score = tmp.right()
+    #             if score > top:
+    #                 top = score
+    #                 action = i
+    #             if score == SCOER_MOVE:
+    #                 move_list.append(i)
+    #             if score == SCORE_END:
+    #                 Q[state][i] == SCORE_END
+    #         elif i == 3:
+    #             _, score = tmp.left()
+    #             if score > top:
+    #                 top = score
+    #                 action = i
+    #             if score == SCOER_MOVE:
+    #                 move_list.append(i)
+    #             if score == SCORE_END:
+    #                 Q[state][i] == SCORE_END
+    #     if top != SCOER_MOVE:
+    #         return action
 
-        for apple in self.green_apple:
-            if apple.x == self.snake_head.x:
-                if apple.y > self.snake_head.y and 1 in move_list:
-                    return 1
-                elif apple.y < self.snake_head.y and 0 in move_list:
-                    return 0
-            if apple.y == self.snake_head.y:
-                if apple.x > self.snake_head.x and 2 in move_list:
-                    return 2
-                elif apple.x < self.snake_head.x and 3 in move_list:
-                    return 3
-        for i in range(100):
-            action = Q.max_action(state)
-            if action in move_list:
-                return action
-        return action
+    #     for apple in self.green_apple:
+    #         if apple.x == self.snake_head.x:
+    #             if apple.y > self.snake_head.y and 1 in move_list:
+    #                 return 1
+    #             elif apple.y < self.snake_head.y and 0 in move_list:
+    #                 return 0
+    #         if apple.y == self.snake_head.y:
+    #             if apple.x > self.snake_head.x and 2 in move_list:
+    #                 return 2
+    #             elif apple.x < self.snake_head.x and 3 in move_list:
+    #                 return 3
+    #     for i in range(100):
+    #         action = Q.max_action(state)
+    #         if action in move_list:
+    #             return action
+    #     return action
 
     def state(self):
         N_L = 0
@@ -346,7 +397,7 @@ class Board:
             elif self.visibility_horizontal[i] == "B":
                 state += B_L
             state *= 4
-        for i in range(self.snake_head.y - 2, self.snake_head + 3):
+        for i in range(self.snake_head.y - 2, self.snake_head.y + 3):
             if i >= self.size or i < 0:
                 state += B_L
             elif self.visibility_vertical[i] == "0":
