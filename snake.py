@@ -1,7 +1,7 @@
 from Args import parse_args
-from graphic import display_board
-from train import train
-from dontlearn import dontlearn
+from Graphic import display_board
+from Train import train
+from Dontlearn import dontlearn
 
 if __name__ == "__main__":
     args = parse_args()

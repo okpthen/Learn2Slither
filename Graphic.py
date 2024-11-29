@@ -1,7 +1,6 @@
 import pygame
 import sys
 from Board import Board, SNAME_ACTION
-from Q_table import Q_table
 
 
 def drwa_board(screen, board: Board):
@@ -30,7 +29,6 @@ def display_board(args):
     clock = pygame.time.Clock()
     board = Board(args.size)
     print(board)
-    Q = Q_table(args.load)
 
     while True:
         for event in pygame.event.get():
@@ -43,14 +41,18 @@ def display_board(args):
                     sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
-                    print(f"R key pressed! State hash: {board.__hash__()}")
-                    # print(board)
+                    print(f"R key pressed!")
+                    print(board)
                 if event.key == pygame.K_t:
                     print(f"T key pressed! Snake size: {board.snake_size()}")
+                    aaa = board.state()
+                    print(len(aaa))
                 if event.key == pygame.K_e:
-                    action = board.max_action(Q, 0)
-                    # print(f"E key pressed! Max action key: {action}")
-                    print(f"E key pressed! Max action: {SNAME_ACTION[action]}")
+                    print(f"E key pressed!")
+                    board.print_vis()
+                if event.key == pygame.K_w:
+                    print(f"W key pressed! Reset!")
+                    board.reset()
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             end, _ = board.left()
