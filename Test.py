@@ -29,7 +29,6 @@ def display_board(args):
     pygame.display.set_caption("learn2slither")
     clock = pygame.time.Clock()
     board = Board(args.size)
-    # print(board)
     Q = Q_table(args.load)
 
     while True:

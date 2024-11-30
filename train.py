@@ -25,14 +25,20 @@ def section(Q : Q_table, args, agent , i):
         elif SNAME_ACTION[action] == "LEFT":
             end, reword = board.left()
         new_state = board.__hash__()
-        tmp = (reword + (Discount_Factor * Q.max_point(new_state)) - score_prev)
+        if end:
+            tmp = reword - score_prev
+        else:
+            tmp = (reword + (Discount_Factor * Q.max_point(new_state)) - score_prev)
         Q[state][action] = score_prev + (Learning_Rate * tmp)
         state = new_state
         if max_length < board.snake_size():
             max_length = board.snake_size()
         duration += 1
         if end:
-            print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+            if max_length > 13:
+                print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+            elif i % 50000 == 0:
+                print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
             break
     return max_length
 

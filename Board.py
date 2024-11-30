@@ -314,7 +314,7 @@ class Board:
 
     def print_vis(self):
         str = ""
-        self.make_visibility()
+        # self.make_visibility()
         for y in range(self.size + 2):
             for x  in range(self.size + 2):
                 str += self.add_char(x, y)
@@ -393,7 +393,7 @@ class Board:
         G_L = 3
         W_L = 4
         state = 0
-        self.make_visibility()
+        # self.make_visibility()
         # for i in range(self.snake_head.x, self.snake_head.x + 3):視界1
         # for i in range(self.snake_head.x - 2, self.snake_head.x + 5) 視界3
         for i in range(self.snake_head.x + 1 - VISION, self.snake_head.x + 2 + VISION):
@@ -426,3 +426,15 @@ class Board:
                 state += B_L
             state *= 5
         return state
+    
+    def action(self, i):
+        if i == 0:
+            end, reward = self.up()
+        elif i == 1:
+            end, reward = self.down()
+        elif i == 2:
+            end, reward = self.right()
+        elif i == 3:
+            end, reward = self.left()
+        self.make_visibility()
+        return end, reward

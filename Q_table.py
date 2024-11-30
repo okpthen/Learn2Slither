@@ -14,7 +14,7 @@ class Q_table(dict):
                 print(f"{file} doesn't exist.")
                 sys.exit()
         else:
-            print("No model file! New Qtable made")
+            print("No model file! New Qtable maded")
             super().__init__()
 
     def save(self, file_name):
