@@ -4,7 +4,8 @@ import sys
 import hashlib
 import copy
 from Q_table import Q_table
-from config import SCORE_END, SCOER_MOVE, SCORE_GREEN, SCORE_RED, SCORE_CLEAR, SNAME_ACTION
+from config import SCORE_END, SCOER_MOVE, SCORE_GREEN, SCORE_RED, SCORE_CLEAR, SNAME_ACTION, VISION
+
 
 
 # SNAME_ACTION = {
@@ -41,6 +42,15 @@ class Board:
                 break
         self.make_visibility()
 
+    def reset(self):
+        self.snake_body.clear()
+        self.make_snake()
+        while True:
+            self.random()
+            if self.check():
+                break
+        self.make_visibility()
+
     def __repr__(self):
         """repr"""
         res = "Board State:\n"
@@ -49,8 +59,8 @@ class Board:
         res += f"Green Apple 2:  {repr(self.green_apple[1])}\n"
         res += f"Snake Head :  {repr(self.snake_head)}\n"
         res += f"Snake Body :  {[repr(seg) for seg in self.snake_body]}\n"
-        res += "Snake visibility\n"
-        res += f"Visibility : {[repr(segment) for segment in self.visibility]}"
+        # res += "Snake visibility\n"
+        # res += f"Visibility : {[repr(segment) for segment in self.visibility]}"
         return res
 
     def __hash__(self):
@@ -96,12 +106,12 @@ class Board:
                     new_head = Coordinates(current_position.x,
                                            current_position.y - 1)
                 elif SNAME_ACTION[direction] == "DOWN":
-                    if current_position.y == 9:
+                    if current_position.y == self.size -1:
                         continue
                     new_head = Coordinates(current_position.x,
                                            current_position.y + 1)
                 elif SNAME_ACTION[direction] == "RIGHT":
-                    if current_position.x == 9:
+                    if current_position.x ==  self.size -1:
                         continue
                     new_head = Coordinates(current_position.x + 1,
                                            current_position.y)
@@ -265,7 +275,7 @@ class Board:
     def make_visibility(self):
         vertical = "W"
         horizontal = "W"
-        for i in range (10):
+        for i in range (self.size):
             if self.snake_head.x == self.red_apple.x and self.red_apple.y == i:
                 vertical += "R"
             if self.snake_head.y == self.red_apple.y and self.red_apple.x == i:
@@ -298,15 +308,15 @@ class Board:
             return self.visibility_vertical[y]
         if y - 1 == self.snake_head.y:
             return self.visibility_horizontal[x]
-        if x == 0 or x == 11 or y == 0 or y == 11:
+        if x == 0 or x == self.size + 1 or y == 0 or self.size + 1 == y:
             return " "
         return "."
 
     def print_vis(self):
         str = ""
         self.make_visibility()
-        for y in range(12):
-            for x  in range(12):
+        for y in range(self.size + 2):
+            for x  in range(self.size + 2):
                 str += self.add_char(x, y)
             str += "\n"
         print(str)
@@ -381,10 +391,13 @@ class Board:
         B_L = 1
         R_L = 2
         G_L = 3
+        W_L = 4
         state = 0
         self.make_visibility()
-        for i in range(self.snake_head.x - 2, self.snake_head.x + 3):
-            if i >= self.size or i < 0:
+        # for i in range(self.snake_head.x, self.snake_head.x + 3):視界1
+        # for i in range(self.snake_head.x - 2, self.snake_head.x + 5) 視界3
+        for i in range(self.snake_head.x + 1 - VISION, self.snake_head.x + 2 + VISION):
+            if i >= self.size or i < 1:
                 state += B_L
             elif self.visibility_horizontal[i] == "0":
                 state += N_L
@@ -397,8 +410,9 @@ class Board:
             elif self.visibility_horizontal[i] == "B":
                 state += B_L
             state *= 4
-        for i in range(self.snake_head.y - 2, self.snake_head.y + 3):
-            if i >= self.size or i < 0:
+            # print(state)
+        for i in range (self.snake_head.y + 1  - VISION, self.snake_head.y + 2 + VISION):
+            if i >= self.size or i < 1:
                 state += B_L
             elif self.visibility_vertical[i] == "0":
                 state += N_L
@@ -410,5 +424,5 @@ class Board:
                 state += R_L
             elif self.visibility_vertical[i] == "B":
                 state += B_L
-            state += 4
+            state *= 4
         return state

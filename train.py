@@ -1,23 +1,16 @@
 from Board import Board, SNAME_ACTION
-import random
 from Q_table import Q_table
-from config import Learning_Rate, Discount_Factor, Exploration_Rate, Exploration_Rate_min,  Exploration_Rate_decrace 
+from config import Learning_Rate, Discount_Factor
+from Exploration import Agent
 
-
-def section(Q : Q_table, args, Exploration):
+def section(Q : Q_table, args, agent , i):
     board = Board(args.size)
     state = board.__hash__()
     duration = 0
     max_length = 3
-    score = 0
-    # Exploration = Exploration_Rate
     while True:
         Q.init_state(state)
-        epsilon_greedy = random.randint(1, 1000) / 1000
-        if epsilon_greedy <= Exploration:
-            action = random.randint(0, 3)
-        else:
-            action = Q.max_action(state)
+        action = agent.select_action(Q, i, state)
         score_prev = Q[state][action]
         if args.visual == "on":
             board.print_vis()
@@ -39,21 +32,19 @@ def section(Q : Q_table, args, Exploration):
             max_length = board.snake_size()
         duration += 1
         if end:
-            print(f"Game over, max length = {max_length}, max duratio = {duration}")
+            print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
             break
     return max_length
 
 def train(args):
     Q = Q_table(args.load)
     max = 0
-    Exploration = Exploration_Rate
+    agent = Agent(args.sessions)
     for i in range (args.sessions):
-        length = section(Q, args, Exploration)
+        length = section(Q, args, agent, i)
         if max < length:
             max = length
-        if Exploration > Exploration_Rate_min:
-            Exploration -= Exploration_Rate_decrace
     print(f"max length :{max}")
-    print(f"Q = {len(Q)}")
+    print(f"Q_table length = {len(Q)}")
     # print(args)
     Q.save(args.save)
