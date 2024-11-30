@@ -52,10 +52,6 @@ def display_board(args):
                     action = Q.max_action(board.state())
                     print(f"E key pressed! Max action key: {action}")
                     print(f"E key pressed! Max action: {SNAME_ACTION[action]}")
-                # if event.key == pygame.K_SPACE:
-                #     action = Q.max_action(board.state())
-                #     print("Space key pressed! Move Aoute")
-                #     board.action(action)
                 if event.key == pygame.K_LEFT:
                     end, _ = board.left()
                     if end:
@@ -80,9 +76,6 @@ def display_board(args):
                         # pygame.quit()
                         # sys.exit()
                         print("end")
-                # if event.key == pygame.K_SPACE:
-                #     action = Q.max_action(board.state())
-                #     board.action(action)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             action = Q.max_action(board.state())
