@@ -1,5 +1,6 @@
 from Q_table import Q_table
 from Board import Board, SNAME_ACTION
+from config import Default_sessions
 
 def display(Q, args):
     board = Board(args.size)
@@ -40,7 +41,11 @@ def dontlearn(args):
     Q = Q_table(args.load)
     max_length = 0
     max_duration = 0
-    for _ in range(args.sessions):
+    if args.sessions == Default_sessions:
+        time = 100
+    else:
+        time = args.sessions
+    for _ in range(time):
         length, duration = display(Q, args)
         if max_length < length:
             max_length = length

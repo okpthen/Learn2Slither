@@ -14,6 +14,7 @@ SNAME_ACTION = {
     2: "RIGHT",
     3: "LEFT"
 }
+
 VISION = 3
 
 Default_sessions = 100000

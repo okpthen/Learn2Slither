@@ -398,7 +398,7 @@ class Board:
         # for i in range(self.snake_head.x - 2, self.snake_head.x + 5) 視界3
         for i in range(self.snake_head.x + 1 - VISION, self.snake_head.x + 2 + VISION):
             if i >= self.size or i < 1:
-                state += B_L
+                state += W_L
             elif self.visibility_horizontal[i] == "0":
                 state += N_L
             elif self.visibility_horizontal[i] == "H":
@@ -409,11 +409,11 @@ class Board:
                 state += R_L
             elif self.visibility_horizontal[i] == "B":
                 state += B_L
-            state *= 4
+            state *= 5
             # print(state)
         for i in range (self.snake_head.y + 1  - VISION, self.snake_head.y + 2 + VISION):
             if i >= self.size or i < 1:
-                state += B_L
+                state += W_L
             elif self.visibility_vertical[i] == "0":
                 state += N_L
             elif self.visibility_vertical[i] == "H":
@@ -424,5 +424,5 @@ class Board:
                 state += R_L
             elif self.visibility_vertical[i] == "B":
                 state += B_L
-            state *= 4
+            state *= 5
         return state
