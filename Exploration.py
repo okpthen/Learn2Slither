@@ -17,7 +17,6 @@ class Agent:
 
     def select_action(self, Qtable, i, state):
         epsilon = self.get_epsilon(i)
-        # print(epsilon)
         if np.random.rand() <= epsilon:
             return random.randint(0, 3)
         else:

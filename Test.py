@@ -42,17 +42,20 @@ def display_board(args):
                     sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
-                    # print(f"R key pressed! State hash: {board.__hash__()}")
-                    print(board)
-                    # board.print_vis()
-                if event.key == pygame.K_t:
                     print(f"T key pressed! Reset:")
                     board.reset()
-                if event.key == pygame.K_e:
+                if event.key == pygame.K_q:
+                    print(f"Q key pressed!")
+                    board.print_vis()
+                    print(board)
+                if event.key == pygame.K_w:
                     action = Q.max_action(board.state())
                     print(f"E key pressed! Max action key: {action}")
                     print(f"E key pressed! Max action: {SNAME_ACTION[action]}")
-                    # print(f"State = {board.state()}")
+                # if event.key == pygame.K_SPACE:
+                #     action = Q.max_action(board.state())
+                #     print("Space key pressed! Move Aoute")
+                #     board.action(action)
                 if event.key == pygame.K_LEFT:
                     end, _ = board.left()
                     if end:
@@ -77,7 +80,13 @@ def display_board(args):
                         # pygame.quit()
                         # sys.exit()
                         print("end")
-        # keys = pygame.key.get_pressed()
+                # if event.key == pygame.K_SPACE:
+                #     action = Q.max_action(board.state())
+                #     board.action(action)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            action = Q.max_action(board.state())
+            board.action(action)
         # if keys[pygame.K_LEFT]:
         #     end, _ = board.left()
         #     if end:

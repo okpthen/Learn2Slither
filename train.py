@@ -17,14 +17,6 @@ def section(Q : Q_table, args, agent , i):
             print(SNAME_ACTION[action])
             print("\n")
         end, reword = board.action(action)
-        # if SNAME_ACTION[action] == "UP":
-        #     end, reword = board.up()
-        # elif SNAME_ACTION[action] == "DOWN":
-        #     end, reword = board.down()
-        # elif SNAME_ACTION[action] == "RIGHT":
-        #     end, reword = board.right()
-        # elif SNAME_ACTION[action] == "LEFT":
-        #     end, reword = board.left()
         new_state = board.state()
         if end:
             tmp = reword - score_prev
@@ -56,5 +48,4 @@ def train(args):
             max = length
     print(f"max length :{max}")
     print(f"Q_table length = {len(Q)}")
-    # print(args)
     Q.save(args.save)
