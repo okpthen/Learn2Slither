@@ -5,7 +5,7 @@ from Exploration import Agent
 
 def section(Q : Q_table, args, agent , i):
     board = Board(args.size)
-    state = board.__hash__()
+    state = board.state()
     duration = 0
     max_length = 3
     while True:
@@ -16,15 +16,16 @@ def section(Q : Q_table, args, agent , i):
             board.print_vis()
             print(SNAME_ACTION[action])
             print("\n")
-        if SNAME_ACTION[action] == "UP":
-            end, reword = board.up()
-        elif SNAME_ACTION[action] == "DOWN":
-            end, reword = board.down()
-        elif SNAME_ACTION[action] == "RIGHT":
-            end, reword = board.right()
-        elif SNAME_ACTION[action] == "LEFT":
-            end, reword = board.left()
-        new_state = board.__hash__()
+        end, reword = board.action(action)
+        # if SNAME_ACTION[action] == "UP":
+        #     end, reword = board.up()
+        # elif SNAME_ACTION[action] == "DOWN":
+        #     end, reword = board.down()
+        # elif SNAME_ACTION[action] == "RIGHT":
+        #     end, reword = board.right()
+        # elif SNAME_ACTION[action] == "LEFT":
+        #     end, reword = board.left()
+        new_state = board.state()
         if end:
             tmp = reword - score_prev
         else:
@@ -35,9 +36,12 @@ def section(Q : Q_table, args, agent , i):
             max_length = board.snake_size()
         duration += 1
         if end:
-            if max_length > 13:
-                print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
-            elif i % 50000 == 0:
+            if args.sessions > 100000:
+                if max_length > 10:
+                    print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+                elif i % 50000 == 0:
+                    print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+            else:
                 print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
             break
     return max_length
