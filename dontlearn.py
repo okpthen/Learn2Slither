@@ -31,7 +31,7 @@ def display(Q, args):
         if end:
             print(f"Game over, max length = {max_length}, max duratio = {duration}")
             break
-        if duration > 1000:
+        if duration > 1500:
             print(f"snake go loop ")
             break 
     return max_length, duration

@@ -29,7 +29,7 @@ def section(Q : Q_table, args, agent , i):
         duration += 1
         if end:
             if args.sessions > 100000:
-                if max_length > 24:
+                if max_length > 30:
                     print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
                 elif i % 50000 == 0:
                     print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
