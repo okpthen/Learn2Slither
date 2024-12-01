@@ -79,7 +79,10 @@ def display_board(args):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             action = Q.max_action(board.state())
-            board.action(action)
+            owari, _ = board.action(action)
+            print(SNAME_ACTION[action])
+            if owari:
+                print("Game over!!!")
         # if keys[pygame.K_LEFT]:
         #     end, _ = board.left()
         #     if end:
