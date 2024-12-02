@@ -10,7 +10,7 @@ def section(Q : Q_table, args, agent , i):
     max_length = 3
     while True:
         Q.init_state(state)
-        action = agent.select_action(Q, i, state)
+        action = agent.select_action(Q, i, state, board)
         score_prev = Q[state][action]
         if args.visual == "on":
             board.print_vis()

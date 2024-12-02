@@ -50,8 +50,11 @@ def display_board(args):
                     print(board)
                 if event.key == pygame.K_w:
                     action = Q.max_action(board.state())
-                    print(f"E key pressed! Max action key: {action}")
-                    print(f"E key pressed! Max action: {SNAME_ACTION[action]}")
+                    # teach = board.teacher()
+                    print(f"W key pressed! Max action key: {action}")
+                    print(f"W key pressed! Max action: {SNAME_ACTION[action]}")
+                    # print(f"W key pressed! Teach action key: {teach}")
+                    # print(f"W key pressed! Teach action: {SNAME_ACTION[teach]}")
                 if event.key == pygame.K_LEFT:
                     end, _ = board.left()
                     if end:

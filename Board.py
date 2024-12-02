@@ -261,7 +261,6 @@ class Board:
 
     def print_vis(self):
         str = ""
-        # self.make_visibility()
         for y in range(self.size + 2):
             for x  in range(self.size + 2):
                 str += self.add_char(x, y)
@@ -320,3 +319,24 @@ class Board:
             end, reward = self.left()
         self.make_visibility()
         return end, reward
+    
+    def teacher(self):
+        BOARD_MAX = 100
+        state = [BOARD_MAX] * 4
+        for apple in self.green_apple:
+            if self.snake_head.x == apple.x:
+                distance_y = apple.y - self.snake_head.y
+                if distance_y > 0:
+                    state[1] = min(state[1], distance_y)
+                elif distance_y < 0:
+                    state[0] = min(state[0], -distance_y)
+            if self.snake_head.y == apple.y:
+                distance_x = apple.x - self.snake_head.x
+                if distance_x > 0:
+                    state[2] = min(state[2], distance_x)
+                elif distance_x < 0:
+                    state[3] = min(state[3], -distance_x)
+        min_value = min(state)
+        if min_value > VISION:
+            return random.randint(0, 3)
+        return state.index(min_value)

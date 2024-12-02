@@ -10,14 +10,16 @@ class Agent:
         self.slope =  (2 * (self.end - self.start)) / size
     
     def get_epsilon(self, i):
-        if i > 0.95 * self.size:
-            return 0
+        # if i > 0.95 * self.size:
+        #     return 0
         epsilion =  self.start + self.slope * i
         return max(epsilion , self.end)
 
-    def select_action(self, Qtable, i, state):
+    def select_action(self, Qtable, i, state, board):
         epsilon = self.get_epsilon(i)
+        if i > 0.97 * self.size:
+            return Qtable.max_action(state)
         if np.random.rand() <= epsilon:
             return random.randint(0, 3)
         else:
-            return Qtable.max_action(state)
+            return board.teacher()
