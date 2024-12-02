@@ -1,5 +1,5 @@
 from Args import parse_args
-from graphic import display_board
+from Test import display_board
 from train import train
 from dontlearn import dontlearn
 

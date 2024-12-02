@@ -1,9 +1,5 @@
 import argparse
-
-
-Default_sessions = 100
-Default_size = 10
-Default_save = "models/q_table.pkl"
+from config import Default_size, Default_save, Default_sessions
 
 
 def parse_args():

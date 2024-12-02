@@ -1,28 +1,29 @@
 from Q_table import Q_table
 from Board import Board, SNAME_ACTION
+from config import Default_sessions
+import time
+import os
 
 def display(Q, args):
     board = Board(args.size)
-    state = board.__hash__()
+    state = board.state()
     duration = 0
     max_length = 3
+    if args.step_by_step:
+        time.sleep(1)
+    if args.visual == "on":
+        board.print_vis()
     while True:
+        if args.step_by_step:
+            time.sleep(1)
         Q.init_state(state)
-        # action = Q.max_action(state)
-        action = board.max_action(Q, state)
+        action = Q.max_action(state)
+        end, _ = board.action(action)
         if args.visual == "on":
-            board.print_vis()
             print(SNAME_ACTION[action])
-            print("\n")
-        if SNAME_ACTION[action] == "UP":
-            end, _ = board.up()
-        elif SNAME_ACTION[action] == "DOWN":
-            end, _ = board.down()
-        elif SNAME_ACTION[action] == "RIGHT":
-            end, _ = board.right()
-        elif SNAME_ACTION[action] == "LEFT":
-            end, _ = board.left()
-        new_state = board.__hash__()
+            if end == False:
+                board.print_vis()
+        new_state = board.state()
         state = new_state
         if max_length < board.snake_size():
             max_length = board.snake_size()
@@ -30,7 +31,7 @@ def display(Q, args):
         if end:
             print(f"Game over, max length = {max_length}, max duratio = {duration}")
             break
-        if duration > 1000:
+        if duration > 1500:
             print(f"snake go loop ")
             break 
     return max_length, duration
@@ -40,11 +41,13 @@ def dontlearn(args):
     Q = Q_table(args.load)
     max_length = 0
     max_duration = 0
-    for _ in range(args.sessions):
+    if args.sessions == Default_sessions:
+        time = 100
+    else:
+        time = args.sessions
+    for _ in range(time):
         length, duration = display(Q, args)
         if max_length < length:
             max_length = length
             max_duration = duration
-        # if max_duration < duration and duration < 1000:
-        #     max_duration = duration
     print(f"result,  max length = {max_length}, duration = {max_duration}")

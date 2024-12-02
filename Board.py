@@ -4,7 +4,8 @@ import sys
 import hashlib
 import copy
 from Q_table import Q_table
-from config import SCORE_END, SCOER_MOVE, SCORE_GREEN, SCORE_RED, SCORE_CLEAR, SNAME_ACTION
+from config import SCORE_END, SCOER_MOVE, SCORE_GREEN, SCORE_RED, SCORE_CLEAR, SNAME_ACTION, VISION
+
 
 
 # SNAME_ACTION = {
@@ -30,8 +31,19 @@ class Board:
         self.green_apple = [Coordinates(), Coordinates()]
         self.snake_head = Coordinates()
         self.snake_body = []
-        self.visibility = []
+        # self.visibility = []
+        self.visibility_horizontal = ""
+        self.visibility_vertical = ""
         self.size = size
+        self.make_snake()
+        while True:
+            self.random()
+            if self.check():
+                break
+        self.make_visibility()
+
+    def reset(self):
+        self.snake_body.clear()
         self.make_snake()
         while True:
             self.random()
@@ -47,22 +59,7 @@ class Board:
         res += f"Green Apple 2:  {repr(self.green_apple[1])}\n"
         res += f"Snake Head :  {repr(self.snake_head)}\n"
         res += f"Snake Body :  {[repr(seg) for seg in self.snake_body]}\n"
-        res += "Snake visibility\n"
-        res += f"Visibility : {[repr(segment) for segment in self.visibility]}"
         return res
-
-    def __hash__(self):
-        self.update_vis()
-        # return hash((self.snake_head.x, self.snake_head.y, tuple(
-        #     tuple(sorted(segment.items())) for segment in self.visibility
-        # )))
-        data = f"{self.snake_head.x},{self.snake_head.y}," + "|".join(
-            ",".join(f"{k}:{v}" for k, v in sorted(segment.items()))
-            for segment in self.visibility
-        )
-        hash_object = hashlib.sha256(data.encode())
-        return int(hash_object.hexdigest(), 16)
-
 
     def random(self):
         """init randam"""
@@ -94,12 +91,12 @@ class Board:
                     new_head = Coordinates(current_position.x,
                                            current_position.y - 1)
                 elif SNAME_ACTION[direction] == "DOWN":
-                    if current_position.y == 9:
+                    if current_position.y == self.size -1:
                         continue
                     new_head = Coordinates(current_position.x,
                                            current_position.y + 1)
                 elif SNAME_ACTION[direction] == "RIGHT":
-                    if current_position.x == 9:
+                    if current_position.x ==  self.size -1:
                         continue
                     new_head = Coordinates(current_position.x + 1,
                                            current_position.y)
@@ -122,9 +119,7 @@ class Board:
         RED_T = "\033[41m"
         BLUE_T = "\033[44m"
         str = ""
-        # str += "WWWWWWWWWWWW\n"
         for y in range(self.size):
-            # str += "W"
             for x in range(self.size):
                 if self.red_apple.eq(x, y):
                     str += RED_T + "R" + RESET
@@ -136,9 +131,7 @@ class Board:
                     str += BLUE_T + " " + RESET
                 else:
                     str += "0"
-            # str += "W\n"
             str += "\n"
-        # str += "WWWWWWWWWWWW"
         print(str)
 
     def up(self):
@@ -225,103 +218,105 @@ class Board:
                 break
         return CONTINUE_GAME, SCORE_GREEN
 
+
     def make_visibility(self):
-        if self.snake_head.x == self.red_apple.x or\
-                self.snake_head.y == self.red_apple.y:
-            self.visibility.append({'R': self.red_apple})
-        for apple in self.green_apple:
-            if apple.x == self.snake_head.x or apple.y == self.snake_head.y:
-                self.visibility.append({'G': apple})
-        for body in self.snake_body:
-            if body.x == self.snake_head.x or body.y == self.snake_head.y:
-                self.visibility.append({'B': body})
-        self.visibility.sort(key=lambda segment: sorted(segment.items()))
+        vertical = "W"
+        horizontal = "W"
+        for i in range (self.size):
+            if self.snake_head.x == self.red_apple.x and self.red_apple.y == i:
+                vertical += "R"
+            if self.snake_head.y == self.red_apple.y and self.red_apple.x == i:
+                horizontal += "R"
+            if self.snake_head.y == i:
+                vertical += "H"
+            if self.snake_head.x == i:
+                horizontal += "H"
+            for apple in self.green_apple:
+                if apple.x == self.snake_head.x and apple.y == i:
+                    vertical += "G"
+                if apple.y == self.snake_head.y and apple.x == i:
+                    horizontal += "G"
+            for body in self.snake_body:
+                if body.x == self.snake_head.x and body.y == i:
+                    vertical += "B"
+                if body.y == self.snake_head.y and body.x == i:
+                    horizontal += "B"
+            if len(vertical) == i + 1:
+                vertical += "0"
+            if len(horizontal) == i + 1:
+                horizontal += "0"
+        horizontal += "W"
+        vertical += "W"
+        self.visibility_vertical = vertical
+        self.visibility_horizontal = horizontal
 
     def add_char(self, x, y):
-        if self.snake_head.eq(x, y):
-            return "H"
-        for tmp in self.visibility:
-            for kye, value in tmp.items():
-                if value.eq(x, y):
-                    return kye
-        if x == self.snake_head.x or y == self.snake_head.y:
-            return "0"
-        return " "
+        if x - 1 == self.snake_head.x:
+            return self.visibility_vertical[y]
+        if y - 1 == self.snake_head.y:
+            return self.visibility_horizontal[x]
+        if x == 0 or x == self.size + 1 or y == 0 or self.size + 1 == y:
+            return " "
+        return "."
 
     def print_vis(self):
         str = ""
-        for y in range(10):
-            for x in range(10):
+        # self.make_visibility()
+        for y in range(self.size + 2):
+            for x  in range(self.size + 2):
                 str += self.add_char(x, y)
             str += "\n"
         print(str)
-
-    def update_vis(self):
-        self.visibility.clear()
-        self.make_visibility()
     
     def snake_size(self):
         return 1 + len(self.snake_body)
     
-    def max_action(self, Q : Q_table, state):
-        top = -1001
-        action = -1
-        move_list = []
-        for i in range(4):
-            tmp = copy.deepcopy(self)
-            if i == 0:
-                _, score = tmp.up()
-                if score > top:
-                    top = score
-                    action = i
-                if score == SCOER_MOVE:
-                    move_list.append(i)
-                if score == SCORE_END:
-                    Q[state][i] == SCORE_END
-            elif i == 1:
-                _, score = tmp.down()
-                if score > top:
-                    top = score
-                    action = i
-                if score == SCOER_MOVE:
-                    move_list.append(i)
-                if score == SCORE_END:
-                    Q[state][i] == SCORE_END
-            elif i == 2:
-                _, score = tmp.right()
-                if score > top:
-                    top = score
-                    action = i
-                if score == SCOER_MOVE:
-                    move_list.append(i)
-                if score == SCORE_END:
-                    Q[state][i] == SCORE_END
-            elif i == 3:
-                _, score = tmp.left()
-                if score > top:
-                    top = score
-                    action = i
-                if score == SCOER_MOVE:
-                    move_list.append(i)
-                if score == SCORE_END:
-                    Q[state][i] == SCORE_END
-        if top != SCOER_MOVE:
-            return action
 
-        for apple in self.green_apple:
-            if apple.x == self.snake_head.x:
-                if apple.y > self.snake_head.y and 1 in move_list:
-                    return 1
-                elif apple.y < self.snake_head.y and 0 in move_list:
-                    return 0
-            if apple.y == self.snake_head.y:
-                if apple.x > self.snake_head.x and 2 in move_list:
-                    return 2
-                elif apple.x < self.snake_head.x and 3 in move_list:
-                    return 3
-        for i in range(100):
-            action = Q.max_action(state)
-            if action in move_list:
-                return action
-        return action
+    def state(self):
+        N_L = 0
+        B_L = 1
+        R_L = 2
+        G_L = 3
+        W_L = 4
+        state = 0
+        for i in range(self.snake_head.x + 1 - VISION, self.snake_head.x + 2 + VISION):
+            if i >= self.size or i < 1:
+                state += W_L
+            elif self.visibility_horizontal[i] == "0":
+                state += N_L
+            elif self.visibility_horizontal[i] == "H":
+                continue
+            elif self.visibility_horizontal[i] == "G":
+                state += G_L
+            elif self.visibility_horizontal[i] == "R":
+                state += R_L
+            elif self.visibility_horizontal[i] == "B":
+                state += B_L
+            state *= 5
+        for i in range (self.snake_head.y + 1  - VISION, self.snake_head.y + 2 + VISION):
+            if i >= self.size or i < 1:
+                state += W_L
+            elif self.visibility_vertical[i] == "0":
+                state += N_L
+            elif self.visibility_vertical[i] == "H":
+                continue
+            elif self.visibility_vertical[i] == "G":
+                state += G_L
+            elif self.visibility_vertical[i] == "R":
+                state += R_L
+            elif self.visibility_vertical[i] == "B":
+                state += B_L
+            state *= 5
+        return state
     
+    def action(self, i):
+        if i == 0:
+            end, reward = self.up()
+        elif i == 1:
+            end, reward = self.down()
+        elif i == 2:
+            end, reward = self.right()
+        elif i == 3:
+            end, reward = self.left()
+        self.make_visibility()
+        return end, reward
