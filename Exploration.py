@@ -10,8 +10,8 @@ class Agent:
         self.slope =  (2 * (self.end - self.start)) / size
     
     def get_epsilon(self, i):
-        # if i > 0.95 * self.size:
-        #     return 0
+        if i > 0.90 * self.size:
+            return 0
         epsilion =  self.start + self.slope * i
         return max(epsilion , self.end)
 

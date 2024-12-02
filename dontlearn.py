@@ -2,7 +2,6 @@ from Q_table import Q_table
 from Board import Board, SNAME_ACTION
 from config import Default_sessions
 import time
-import os
 
 def display(Q, args):
     board = Board(args.size)
@@ -11,7 +10,6 @@ def display(Q, args):
     max_length = 3
     if args.step_by_step:
         time.sleep(1)
-    if args.visual == "on":
         board.print_vis()
     while True:
         if args.step_by_step:
@@ -19,7 +17,7 @@ def display(Q, args):
         Q.init_state(state)
         action = Q.max_action(state)
         end, _ = board.action(action)
-        if args.visual == "on":
+        if args.step_by_step:
             print(SNAME_ACTION[action])
             if end == False:
                 board.print_vis()
@@ -31,8 +29,8 @@ def display(Q, args):
         if end:
             print(f"Game over, max length = {max_length}, max duratio = {duration}")
             break
-        if duration > 1500:
-            print(f"snake go loop ")
+        if duration > 500:
+            print(f"Snake go loop, length = {max_length}")
             break 
     return max_length, duration
 
@@ -41,13 +39,16 @@ def dontlearn(args):
     Q = Q_table(args.load)
     max_length = 0
     max_duration = 0
+    loop = 0
     if args.sessions == Default_sessions:
         time = 100
     else:
         time = args.sessions
     for _ in range(time):
         length, duration = display(Q, args)
+        if duration == 501:
+            loop += 1
         if max_length < length:
             max_length = length
             max_duration = duration
-    print(f"result,  max length = {max_length}, duration = {max_duration}")
+    print(f"result,  max length = {max_length}, duration = {max_duration}, loop = {loop}")
