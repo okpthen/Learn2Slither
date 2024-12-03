@@ -1,11 +1,8 @@
 from Coordinates import Coordinates
 import random
 import sys
-import hashlib
-import copy
-from Q_table import Q_table
-from config import SCORE_END, SCOER_MOVE, SCORE_GREEN, SCORE_RED, SCORE_CLEAR, SNAME_ACTION, VISION
-
+from config import SCORE_END, SCOER_MOVE, SCORE_GREEN, \
+        SCORE_RED, SCORE_CLEAR, SNAME_ACTION, VISION
 
 
 # SNAME_ACTION = {
@@ -22,6 +19,7 @@ CONTINUE_GAME = False
 # SCORE_GREEN = 5
 # SCORE_RED = -5
 # SCORE_CLEAR = 1000
+
 
 class Board:
     """Board class"""
@@ -77,7 +75,7 @@ class Board:
     def check_new_head(self, new_head):
         all_objcs = [*self.snake_body, new_head]
         return len(all_objcs) == len(set((obj.x, obj.y) for obj in all_objcs))
-    
+
     def make_snake(self):
         """init snake"""
         self.snake_head.random(self.size)
@@ -91,12 +89,12 @@ class Board:
                     new_head = Coordinates(current_position.x,
                                            current_position.y - 1)
                 elif SNAME_ACTION[direction] == "DOWN":
-                    if current_position.y == self.size -1:
+                    if current_position.y == self.size - 1:
                         continue
                     new_head = Coordinates(current_position.x,
                                            current_position.y + 1)
                 elif SNAME_ACTION[direction] == "RIGHT":
-                    if current_position.x ==  self.size -1:
+                    if current_position.x == self.size - 1:
                         continue
                     new_head = Coordinates(current_position.x + 1,
                                            current_position.y)
@@ -141,7 +139,7 @@ class Board:
         return self.move(next_position)
 
     def down(self):
-        if self.snake_head.y == self.size -1:
+        if self.snake_head.y == self.size - 1:
             return END_GAME, SCORE_END
         next_position = Coordinates(self.snake_head.x, self.snake_head.y + 1)
         return self.move(next_position)
@@ -218,11 +216,10 @@ class Board:
                 break
         return CONTINUE_GAME, SCORE_GREEN
 
-
     def make_visibility(self):
         vertical = "W"
         horizontal = "W"
-        for i in range (self.size):
+        for i in range(self.size):
             if self.snake_head.x == self.red_apple.x and self.red_apple.y == i:
                 vertical += "R"
             if self.snake_head.y == self.red_apple.y and self.red_apple.x == i:
@@ -262,14 +259,13 @@ class Board:
     def print_vis(self):
         str = ""
         for y in range(self.size + 2):
-            for x  in range(self.size + 2):
+            for x in range(self.size + 2):
                 str += self.add_char(x, y)
             str += "\n"
         print(str)
-    
+
     def snake_size(self):
         return 1 + len(self.snake_body)
-    
 
     def state(self):
         N_L = 0
@@ -278,7 +274,8 @@ class Board:
         G_L = 3
         W_L = 4
         state = 0
-        for i in range(self.snake_head.x + 1 - VISION, self.snake_head.x + 2 + VISION):
+        for i in range(self.snake_head.x + 1 - VISION,
+                       self.snake_head.x + 2 + VISION):
             if i >= self.size or i < 1:
                 state += W_L
             elif self.visibility_horizontal[i] == "0":
@@ -292,7 +289,8 @@ class Board:
             elif self.visibility_horizontal[i] == "B":
                 state += B_L
             state *= 5
-        for i in range (self.snake_head.y + 1  - VISION, self.snake_head.y + 2 + VISION):
+        for i in range(self.snake_head.y + 1 - VISION,
+                       self.snake_head.y + 2 + VISION):
             if i >= self.size or i < 1:
                 state += W_L
             elif self.visibility_vertical[i] == "0":
@@ -307,7 +305,7 @@ class Board:
                 state += B_L
             state *= 5
         return state
-    
+
     def action(self, i):
         if i == 0:
             end, reward = self.up()
@@ -319,7 +317,7 @@ class Board:
             end, reward = self.left()
         self.make_visibility()
         return end, reward
-    
+
     def teacher(self):
         BOARD_MAX = 100
         state = [BOARD_MAX] * 4

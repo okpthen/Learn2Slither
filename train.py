@@ -3,7 +3,8 @@ from Q_table import Q_table
 from config import Learning_Rate, Discount_Factor
 from Exploration import Agent
 
-def section(Q : Q_table, args, agent , i):
+
+def section(Q: Q_table, args, agent, i):
     board = Board(args.size)
     state = board.state()
     duration = 0
@@ -21,7 +22,8 @@ def section(Q : Q_table, args, agent , i):
         if end:
             tmp = reword - score_prev
         else:
-            tmp = (reword + (Discount_Factor * Q.max_point(new_state)) - score_prev)
+            tmp = (reword + (Discount_Factor * Q.max_point(new_state))
+                   - score_prev)
         Q[state][action] = score_prev + (Learning_Rate * tmp)
         state = new_state
         if max_length < board.snake_size():
@@ -30,21 +32,27 @@ def section(Q : Q_table, args, agent , i):
         if end:
             if args.sessions > 100000:
                 if max_length > 40:
-                    print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+                    print(f"{i}/{args.sessions} Game over, max length = \
+                          {max_length}, max duratio = {duration}")
                 elif i % 50000 == 0:
-                    print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+                    print(f"{i}/{args.sessions} Game over, max length = \
+                          {max_length}, max duratio = {duration}")
                 # elif i > 970000 and i % 1000 == 0:
-                #     print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+                #     print(f"{i}/{args.sessions} Game over, max length = \
+                #           {max_length}, max duratio = {duration}")
             else:
-                print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+                print(f"{i}/{args.sessions} \
+                      Game over, max length = {max_length}, \
+                        max duratio = {duration}")
             break
     return max_length
+
 
 def train(args):
     Q = Q_table(args.load)
     max = 0
     agent = Agent(args.sessions)
-    for i in range (args.sessions):
+    for i in range(args.sessions):
         length = section(Q, args, agent, i)
         if max < length:
             max = length

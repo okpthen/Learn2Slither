@@ -42,10 +42,10 @@ def display_board(args):
                     sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
-                    print(f"T key pressed! Reset:")
+                    print("T key pressed! Reset:")
                     board.reset()
                 if event.key == pygame.K_q:
-                    print(f"Q key pressed!")
+                    print("Q key pressed!")
                     board.print_vis()
                     print(board)
                 if event.key == pygame.K_w:
@@ -54,7 +54,7 @@ def display_board(args):
                     print(f"W key pressed! Max action key: {action}")
                     print(f"W key pressed! Max action: {SNAME_ACTION[action]}")
                     # print(f"W key pressed! Teach action key: {teach}")
-                    # print(f"W key pressed! Teach action: {SNAME_ACTION[teach]}")
+                    # print(f"W key pressed! Teach action:")
                 if event.key == pygame.K_LEFT:
                     end, _ = board.left()
                     if end:
