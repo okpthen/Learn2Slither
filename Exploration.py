@@ -17,9 +17,10 @@ class Agent:
 
     def select_action(self, Qtable, i, state, board):
         epsilon = self.get_epsilon(i)
-        if i > 0.97 * self.size:
-            return Qtable.max_action(state)
+        # if i > 0.97 * self.size:
+        #     return Qtable.max_action(state)
         if np.random.rand() <= epsilon:
             return random.randint(0, 3)
         else:
-            return board.teacher()
+            # return board.teacher()
+            return Qtable.max_action(state)

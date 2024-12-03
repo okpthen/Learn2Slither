@@ -33,8 +33,8 @@ def section(Q : Q_table, args, agent , i):
                     print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
                 elif i % 50000 == 0:
                     print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
-                elif i > 970000 and i % 1000 == 0:
-                    print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
+                # elif i > 970000 and i % 1000 == 0:
+                #     print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
             else:
                 print(f"{i}/{args.sessions} Game over, max length = {max_length}, max duratio = {duration}")
             break
